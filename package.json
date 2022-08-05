@@ -1,0 +1,19 @@
+{
+  "name": "senseis-news-discord",
+  "version": "1.0.0",
+  "description": "Dicord bot to send news from RSS feed",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/senseisclub/senseis-news-discord.git"
+  },
+  "author": "Henrique Barbosa",
+  "license": "MIT",
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^5.32.0",
+    "@typescript-eslint/parser": "^5.32.0",
+    "eslint": "^8.21.0",
+    "prettier": "^2.7.1",
+    "typescript": "^4.7.4"
+  }
+}
