@@ -3,33 +3,31 @@ import xml2js from 'xml2js';
 
 export function getXmlFromUrl(url: string) {
   return new Promise((resolve, reject) => {
-    https.get(url, (res) => {
-      if (res.statusCode !== 200) {
+    const req = https.get(url, (res) => {
+      if (!res.statusCode || res.statusCode < 200 || res.statusCode > 299) {
         res.resume();
-        reject(() => {
-          throw new Error('Status code is not 200!');
-        });
+
+        reject(new Error('No successful response!'));
       }
 
-      let data = '';
+      const chunks: string[] = [];
 
-      res.on('data', (chunk) => {
-        data += chunk.toString();
-      });
-
+      res.on('data', (chunk) => chunks.push(chunk));
+      res.on('error', reject);
       res.on('end', () => {
-        xml2js.parseString(data, { mergeAttrs: true }, (err, xmlResponse) => {
-          if (!xmlResponse) {
-            reject(() => {
-              throw new Error('No data returned!');
-            });
+        const body = chunks.join('');
+
+        xml2js.parseString(body, { mergeAttrs: true }, (err, bodyXml) => {
+          if (err || !bodyXml) {
+            reject(new Error('No data returned!'));
           }
 
-          resolve(xmlResponse);
+          resolve(bodyXml);
         });
       });
-
-      res.on('error', reject);
     });
+
+    req.on('error', reject);
+    req.end();
   });
 }
