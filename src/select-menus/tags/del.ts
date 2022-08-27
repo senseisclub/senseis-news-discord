@@ -1,20 +1,20 @@
 import { InteractionResponse, SelectMenuInteraction } from 'discord.js';
-import { FeedModel } from '../../databases/mongo/models/feeds';
+import { TagModel } from '../../databases/mongo/models/tags';
 import { BotSelectMenu } from '../types/BotSelectMenu';
 
 class DelSelectMenu implements BotSelectMenu {
   customId: string;
 
   constructor() {
-    this.customId = 'remove-feed';
+    this.customId = 'remove-tag';
   }
 
   async execute(interaction: SelectMenuInteraction): Promise<InteractionResponse<boolean> | undefined> {
-    const deletedFeed = await FeedModel.findByIdAndRemove(interaction.values[0]);
+    const deletedTag = await TagModel.findByIdAndRemove(interaction.values[0]);
 
-    let content = ':warning: Sorry, link not found!';
-    if (deletedFeed) {
-      content = `${deletedFeed.link} has been deleted!`;
+    let content = ':warning: Sorry, tag not found!';
+    if (deletedTag) {
+      content = `**${deletedTag.tag}** has been deleted!`;
     }
 
     return interaction.update({ content, components: [] });

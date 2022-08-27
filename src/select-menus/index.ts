@@ -1,7 +1,9 @@
 import { SelectMenuIndex } from './types/CommandIndex';
-import del from './feeds/del';
+import delFeed from './feeds/del';
+import delTag from './tags/del';
 
 const selectMenuModules: SelectMenuIndex = {};
-selectMenuModules[del.customId] = del;
+selectMenuModules[delFeed.customId] = delFeed;
+selectMenuModules[delTag.customId] = delTag;
 
 export default selectMenuModules;
