@@ -19,7 +19,7 @@ class AddFeed implements BotSubcommand {
 
       if (duplicated) {
         return interaction.reply({
-          content: `:warning: Sorry, duplicate link!`,
+          content: ':warning: Sorry, duplicate link!',
           ephemeral: true,
         });
       }
@@ -33,7 +33,7 @@ class AddFeed implements BotSubcommand {
       });
     } catch (error) {
       return interaction.reply({
-        content: `:warning: Sorry, invalid link!`,
+        content: ':warning: Sorry, invalid link!',
         ephemeral: true,
       });
     }
