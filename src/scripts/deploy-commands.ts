@@ -15,7 +15,7 @@ export const syncNewCommands = async () => {
   try {
     console.log('Started refreshing application (/) commands.');
 
-    await rest.put(Routes.applicationGuildCommands(config.APPLICATION_ID, config.GUILD_ID), { body: commands });
+    await rest.put(Routes.applicationCommands(config.APPLICATION_ID), { body: commands });
 
     console.log('Successfully registered application commands.');
   } catch (error) {
