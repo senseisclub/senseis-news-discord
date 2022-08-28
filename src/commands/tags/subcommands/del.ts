@@ -12,8 +12,8 @@ import { TagModel } from '../../../databases/mongo/models/tags';
 class DelTag implements BotSubcommand {
   data = new SlashCommandSubcommandBuilder().setName('del').setDescription('Delete a tag');
 
-  async execute(interaction: ChatInputCommandInteraction) {
-    const tags = await TagModel.find().sort({ link: 'asc' }).exec();
+  async execute(interaction: ChatInputCommandInteraction, guildId: string) {
+    const tags = await TagModel.find({ guildId }).sort({ link: 'asc' }).exec();
 
     if (tags.length == 0) {
       return interaction.reply({

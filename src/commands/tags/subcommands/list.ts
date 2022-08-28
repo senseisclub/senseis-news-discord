@@ -5,8 +5,8 @@ import { BotSubcommand } from '../../types/BotSubcommand';
 class ListTag implements BotSubcommand {
   data = new SlashCommandSubcommandBuilder().setName('list').setDescription('List all added tags');
 
-  async execute(interaction: ChatInputCommandInteraction) {
-    const tags = await TagModel.find().sort({ tag: 'asc' }).exec();
+  async execute(interaction: ChatInputCommandInteraction, guildId: string) {
+    const tags = await TagModel.find({ guildId }).sort({ tag: 'asc' }).exec();
 
     if (tags.length == 0) {
       return interaction.reply({

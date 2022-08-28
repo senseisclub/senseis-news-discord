@@ -2,6 +2,7 @@ import { ChatInputCommandInteraction, SlashCommandSubcommandBuilder } from 'disc
 import { FeedModel } from '../../../databases/mongo/models/feeds';
 import { BotSubcommand } from '../../types/BotSubcommand';
 import feedValidator from '../feed-validation/feed-validator';
+import { Utils } from '../../../utils/utils';
 
 class AddFeed implements BotSubcommand {
   data = new SlashCommandSubcommandBuilder()
@@ -9,13 +10,13 @@ class AddFeed implements BotSubcommand {
     .setDescription('Add a new feed link')
     .addStringOption((option) => option.setName('link').setDescription('Link of feed').setRequired(true));
 
-  async execute(interaction: ChatInputCommandInteraction) {
-    const link = this.sanitizeLink(interaction.options.getString('link'));
+  async execute(interaction: ChatInputCommandInteraction, guildId: string) {
+    const link = Utils.trimAndLowerCase(interaction.options.getString('link'));
 
     try {
       await feedValidator.checkUrl(link);
 
-      const duplicated = await FeedModel.findOne({ link }).exec();
+      const duplicated = await FeedModel.findOne({ link, guildId }).exec();
 
       if (duplicated) {
         return interaction.reply({
@@ -24,7 +25,7 @@ class AddFeed implements BotSubcommand {
         });
       }
 
-      const feed = new FeedModel({ link });
+      const feed = new FeedModel({ link, guildId });
 
       await feed.save();
 
@@ -37,16 +38,6 @@ class AddFeed implements BotSubcommand {
         ephemeral: true,
       });
     }
-  }
-
-  sanitizeLink(link: string | null) {
-    let sanitizedLink = link;
-
-    if (link) {
-      sanitizedLink = link.trim().toLowerCase();
-    }
-
-    return sanitizedLink;
   }
 }
 

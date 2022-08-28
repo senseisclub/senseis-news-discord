@@ -27,9 +27,16 @@ class Feeds implements BotCommand {
       return;
     }
 
+    if (!interaction.guildId) {
+      return interaction.reply({
+        content: ':warning: Sorry, guild not found!',
+        ephemeral: true,
+      });
+    }
+
     const subcommand = interaction.options.getSubcommand();
 
-    return subcommanFeeddModules[subcommand].execute(interaction);
+    return subcommanFeeddModules[subcommand].execute(interaction, interaction.guildId);
   }
 }
 

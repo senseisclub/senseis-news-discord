@@ -8,13 +8,12 @@ class ChannelFeed implements BotSubcommand {
     .setDescription('Set channel to send news')
     .addChannelOption((option) => option.setName('channel').setDescription('Channel to send news').setRequired(true));
 
-  async execute(interaction: ChatInputCommandInteraction) {
+  async execute(interaction: ChatInputCommandInteraction, guildId: string) {
     const channelSelected = interaction.options.getChannel('channel');
-    const guildId = interaction.guildId;
 
-    if (!channelSelected || !guildId) {
+    if (!channelSelected) {
       return interaction.reply({
-        content: ':warning: Sorry, data not informed!',
+        content: ':warning: Sorry, select a channel!',
         ephemeral: true,
       });
     }
