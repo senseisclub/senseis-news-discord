@@ -1,4 +1,4 @@
-import { InteractionResponse, SelectMenuInteraction } from 'discord.js';
+import { bold, InteractionResponse, SelectMenuInteraction } from 'discord.js';
 import { TagModel } from '../../databases/mongo/models/tags';
 import { BotSelectMenu } from '../types/BotSelectMenu';
 
@@ -14,7 +14,7 @@ class DelSelectMenu implements BotSelectMenu {
 
     let content = ':warning: Sorry, tag not found!';
     if (deletedTag) {
-      content = `**${deletedTag.tag}** has been deleted!`;
+      content = `${bold(deletedTag.tag)} has been deleted!`;
     }
 
     return interaction.update({ content, components: [] });

@@ -1,4 +1,4 @@
-import { ChatInputCommandInteraction, SlashCommandSubcommandBuilder } from 'discord.js';
+import { bold, ChatInputCommandInteraction, SlashCommandSubcommandBuilder } from 'discord.js';
 import { BotSubcommand } from '../../types/BotSubcommand';
 import { Utils } from '../../../utils/utils';
 import { TagModel } from '../../../databases/mongo/models/tags';
@@ -12,19 +12,26 @@ class AddTag implements BotSubcommand {
   async execute(interaction: ChatInputCommandInteraction) {
     const tag = Utils.trimAndLowerCase(interaction.options.getString('tag'));
 
-    const duplicated = await TagModel.findOne({ tag }).exec();
+    if (tag) {
+      const duplicated = await TagModel.findOne({ tag }).exec();
 
-    if (duplicated) {
+      if (duplicated) {
+        return interaction.reply({
+          content: ':warning: Sorry, duplicate tag!',
+          ephemeral: true,
+        });
+      }
+
+      await new TagModel({ tag }).save();
+
       return interaction.reply({
-        content: ':warning: Sorry, duplicate tag!',
-        ephemeral: true,
+        content: `${bold(tag)} has been added!`,
       });
     }
 
-    await new TagModel({ tag }).save();
-
     return interaction.reply({
-      content: `**${tag}** has been added!`,
+      content: 'Tag not found! ',
+      ephemeral: true,
     });
   }
 }
