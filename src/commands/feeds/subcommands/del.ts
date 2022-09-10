@@ -8,11 +8,12 @@ import {
 import { FeedModel } from '../../../databases/mongo/models/feeds';
 import { BotSubcommand } from '../../types/BotSubcommand';
 import delSelectMenu from '../../../select-menus/feeds/del';
+import { ObjectId } from 'mongoose';
 
 class DelFeed implements BotSubcommand {
   data = new SlashCommandSubcommandBuilder().setName('del').setDescription('Delete a feed');
 
-  async execute(interaction: ChatInputCommandInteraction, guildId: string) {
+  async execute(interaction: ChatInputCommandInteraction, guildId: ObjectId) {
     const feeds = await FeedModel.find({ guildId }).sort({ link: 'asc' }).exec();
 
     if (feeds.length == 0) {

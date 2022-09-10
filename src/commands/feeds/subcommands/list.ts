@@ -1,11 +1,12 @@
 import { ChatInputCommandInteraction, SlashCommandSubcommandBuilder } from 'discord.js';
+import { ObjectId } from 'mongoose';
 import { FeedModel } from '../../../databases/mongo/models/feeds';
 import { BotSubcommand } from '../../types/BotSubcommand';
 
 class ListFeed implements BotSubcommand {
   data = new SlashCommandSubcommandBuilder().setName('list').setDescription('List all added feeds');
 
-  async execute(interaction: ChatInputCommandInteraction, guildId: string) {
+  async execute(interaction: ChatInputCommandInteraction, guildId: ObjectId) {
     const feeds = await FeedModel.find({ guildId }).sort({ link: 'asc' }).exec();
 
     if (feeds.length == 0) {

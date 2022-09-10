@@ -3,6 +3,7 @@ import { FeedModel } from '../../../databases/mongo/models/feeds';
 import { BotSubcommand } from '../../types/BotSubcommand';
 import feedValidator from '../feed-validation/feed-validator';
 import { Utils } from '../../../utils/utils';
+import { ObjectId } from 'mongoose';
 
 class AddFeed implements BotSubcommand {
   data = new SlashCommandSubcommandBuilder()
@@ -10,7 +11,7 @@ class AddFeed implements BotSubcommand {
     .setDescription('Add a new feed link')
     .addStringOption((option) => option.setName('link').setDescription('Link of feed').setRequired(true));
 
-  async execute(interaction: ChatInputCommandInteraction, guildId: string) {
+  async execute(interaction: ChatInputCommandInteraction, guildId: ObjectId) {
     const link = Utils.trimAndLowerCase(interaction.options.getString('link'));
 
     try {

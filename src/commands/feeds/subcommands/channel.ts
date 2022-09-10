@@ -1,4 +1,5 @@
 import { channelMention, ChannelType, ChatInputCommandInteraction, SlashCommandSubcommandBuilder } from 'discord.js';
+import { ObjectId } from 'mongoose';
 import { ChannelModel } from '../../../databases/mongo/models/channels';
 import { BotSubcommand } from '../../types/BotSubcommand';
 
@@ -8,7 +9,7 @@ class ChannelFeed implements BotSubcommand {
     .setDescription('Set channel to send news')
     .addChannelOption((option) => option.setName('channel').setDescription('Channel to send news').setRequired(true));
 
-  async execute(interaction: ChatInputCommandInteraction, guildId: string) {
+  async execute(interaction: ChatInputCommandInteraction, guildId: ObjectId) {
     const channelSelected = interaction.options.getChannel('channel');
 
     if (!channelSelected) {

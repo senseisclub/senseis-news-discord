@@ -1,13 +1,14 @@
 import { Schema, model } from 'mongoose';
+import { Guild } from './guild';
 
-interface Feed {
+export interface Feed {
   link: string;
-  guildId: string;
+  guild: Guild;
 }
 
 const feedSchema = new Schema<Feed>({
   link: { type: String, required: true },
-  guildId: { type: String, required: true },
+  guild: { type: Schema.Types.ObjectId, ref: 'Guilds', required: true },
 });
 
 export const FeedModel = model<Feed>('Feeds', feedSchema, 'feeds');

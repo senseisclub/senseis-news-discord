@@ -4,6 +4,7 @@ import {
   SlashCommandBuilder,
   SlashCommandSubcommandsOnlyBuilder,
 } from 'discord.js';
+import { GuildModel } from '../../databases/mongo/models/guild';
 import { BotCommand } from '../types/BotCommand';
 import { BotSubcommand } from '../types/BotSubcommand';
 import { subcommanFeeddModules } from './subcommands';
@@ -27,7 +28,8 @@ class Feeds implements BotCommand {
       return;
     }
 
-    if (!interaction.guildId) {
+    const guild = await GuildModel.findOne({ guildId: interaction.guildId });
+    if (!guild) {
       return interaction.reply({
         content: ':warning: Sorry, guild not found!',
         ephemeral: true,
@@ -36,7 +38,7 @@ class Feeds implements BotCommand {
 
     const subcommand = interaction.options.getSubcommand();
 
-    return subcommanFeeddModules[subcommand].execute(interaction, interaction.guildId);
+    return subcommanFeeddModules[subcommand].execute(interaction, guild.id);
   }
 }
 
