@@ -7,7 +7,8 @@ import { onReady, onCommand, onSelectMenu, onClientRemoved, onClientCreated } fr
 
 syncNewCommands();
 connection();
-syncFeedLinks();
+
+syncFeedLinks(client);
 
 onReady(client);
 onClientCreated(client);
