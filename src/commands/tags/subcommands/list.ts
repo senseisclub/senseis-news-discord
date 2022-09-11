@@ -1,12 +1,13 @@
 import { ChatInputCommandInteraction, italic, SlashCommandSubcommandBuilder } from 'discord.js';
+import { ObjectId } from 'mongoose';
 import { TagModel } from '../../../databases/mongo/models/tags';
 import { BotSubcommand } from '../../types/BotSubcommand';
 
 class ListTag implements BotSubcommand {
   data = new SlashCommandSubcommandBuilder().setName('list').setDescription('List all added tags');
 
-  async execute(interaction: ChatInputCommandInteraction, guildId: string) {
-    const tags = await TagModel.find({ guildId }).sort({ tag: 'asc' }).exec();
+  async execute(interaction: ChatInputCommandInteraction, guildId: ObjectId) {
+    const tags = await TagModel.find({ guild: guildId }).sort({ tag: 'asc' }).exec();
 
     if (tags.length == 0) {
       return interaction.reply({

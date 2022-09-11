@@ -2,6 +2,7 @@ import { bold, ChatInputCommandInteraction, SlashCommandSubcommandBuilder } from
 import { BotSubcommand } from '../../types/BotSubcommand';
 import { Utils } from '../../../utils/utils';
 import { TagModel } from '../../../databases/mongo/models/tags';
+import { ObjectId } from 'mongoose';
 
 class AddTag implements BotSubcommand {
   data = new SlashCommandSubcommandBuilder()
@@ -9,11 +10,11 @@ class AddTag implements BotSubcommand {
     .setDescription('Add a new tag')
     .addStringOption((option) => option.setName('tag').setDescription('Tag to filter news').setRequired(true));
 
-  async execute(interaction: ChatInputCommandInteraction, guildId: string) {
+  async execute(interaction: ChatInputCommandInteraction, guildId: ObjectId) {
     const tag = Utils.trimAndLowerCase(interaction.options.getString('tag'));
 
     if (tag) {
-      const duplicated = await TagModel.findOne({ tag, guildId }).exec();
+      const duplicated = await TagModel.findOne({ tag, guild: guildId }).exec();
 
       if (duplicated) {
         return interaction.reply({
@@ -22,7 +23,7 @@ class AddTag implements BotSubcommand {
         });
       }
 
-      await new TagModel({ tag, guildId }).save();
+      await new TagModel({ tag, guild: guildId }).save();
 
       return interaction.reply({
         content: `${bold(tag)} has been added!`,

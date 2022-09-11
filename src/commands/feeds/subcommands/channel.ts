@@ -1,6 +1,6 @@
 import { channelMention, ChannelType, ChatInputCommandInteraction, SlashCommandSubcommandBuilder } from 'discord.js';
 import { ObjectId } from 'mongoose';
-import { ChannelModel } from '../../../databases/mongo/models/channels';
+import { GuildModel } from '../../../databases/mongo/models/guild';
 import { BotSubcommand } from '../../types/BotSubcommand';
 
 class ChannelFeed implements BotSubcommand {
@@ -26,17 +26,13 @@ class ChannelFeed implements BotSubcommand {
       });
     }
 
-    const { id: channelId, name } = channelSelected;
+    const { id: channelId } = channelSelected;
 
-    const channel = await ChannelModel.findOneAndUpdate(
-      { guildId },
-      { channelId, name },
-      { returnOriginal: false, upsert: true }
-    );
+    const guild = await GuildModel.findByIdAndUpdate(guildId, { channelId });
 
-    if (channel) {
+    if (guild) {
       return interaction.reply({
-        content: `${channelMention(channel.channelId)} has been set to news!`,
+        content: `${channelMention(guild.channelId)} has been set to news!`,
       });
     }
 

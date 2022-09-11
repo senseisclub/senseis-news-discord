@@ -7,7 +7,7 @@ class ListFeed implements BotSubcommand {
   data = new SlashCommandSubcommandBuilder().setName('list').setDescription('List all added feeds');
 
   async execute(interaction: ChatInputCommandInteraction, guildId: ObjectId) {
-    const feeds = await FeedModel.find({ guildId }).sort({ link: 'asc' }).exec();
+    const feeds = await FeedModel.find({ guild: guildId }).sort({ link: 'asc' }).exec();
 
     if (feeds.length == 0) {
       return interaction.reply({

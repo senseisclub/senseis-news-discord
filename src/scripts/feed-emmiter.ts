@@ -1,25 +1,23 @@
-import { GuildModel } from '../databases/mongo/models/guild';
 import crypto from 'crypto';
 import RssFeedEmitter from 'rss-feed-emitter';
+import { FeedModel } from '../databases/mongo/models/feeds';
 
 export const feedHashAndChannels = new Map<string, Array<string>>();
 
 export const syncFeedLinks = async () => {
-  const guilds = await GuildModel.find().populate('channel').populate('feeds');
+  const feeds = await FeedModel.find().populate('guild');
   const feeder = new RssFeedEmitter();
 
-  for (const guild of guilds) {
-    for (const feed of guild.feeds) {
-      const hash = crypto.createHash('md5').update(feed.link).digest('hex');
+  for (const feed of feeds) {
+    const hash = crypto.createHash('md5').update(feed.link).digest('hex');
 
-      if (!feedHashAndChannels.has(hash)) {
-        feedHashAndChannels.set(hash, []);
-      }
-
-      feedHashAndChannels.get(hash)?.push(guild.channel.channelId);
-
-      feeder.add({ url: feed.link, refresh: getMsSixPm(), eventName: hash });
+    if (!feedHashAndChannels.has(hash)) {
+      feedHashAndChannels.set(hash, []);
     }
+
+    feedHashAndChannels.get(hash)?.push(feed.guild.channelId);
+
+    feeder.add({ url: feed.link, refresh: getMsSixPm(), eventName: hash });
   }
 };
 

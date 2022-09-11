@@ -17,7 +17,7 @@ class AddFeed implements BotSubcommand {
     try {
       await feedValidator.checkUrl(link);
 
-      const duplicated = await FeedModel.findOne({ link, guildId }).exec();
+      const duplicated = await FeedModel.findOne({ link, guild: guildId }).exec();
 
       if (duplicated) {
         return interaction.reply({
@@ -26,7 +26,7 @@ class AddFeed implements BotSubcommand {
         });
       }
 
-      const feed = new FeedModel({ link, guildId });
+      const feed = new FeedModel({ link, guild: guildId });
 
       await feed.save();
 

@@ -8,12 +8,13 @@ import {
 import { BotSubcommand } from '../../types/BotSubcommand';
 import delSelectMenu from '../../../select-menus/tags/del';
 import { TagModel } from '../../../databases/mongo/models/tags';
+import { ObjectId } from 'mongoose';
 
 class DelTag implements BotSubcommand {
   data = new SlashCommandSubcommandBuilder().setName('del').setDescription('Delete a tag');
 
-  async execute(interaction: ChatInputCommandInteraction, guildId: string) {
-    const tags = await TagModel.find({ guildId }).sort({ link: 'asc' }).exec();
+  async execute(interaction: ChatInputCommandInteraction, guildId: ObjectId) {
+    const tags = await TagModel.find({ guild: guildId }).sort({ link: 'asc' }).exec();
 
     if (tags.length == 0) {
       return interaction.reply({

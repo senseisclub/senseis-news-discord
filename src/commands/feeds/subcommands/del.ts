@@ -14,7 +14,7 @@ class DelFeed implements BotSubcommand {
   data = new SlashCommandSubcommandBuilder().setName('del').setDescription('Delete a feed');
 
   async execute(interaction: ChatInputCommandInteraction, guildId: ObjectId) {
-    const feeds = await FeedModel.find({ guildId }).sort({ link: 'asc' }).exec();
+    const feeds = await FeedModel.find({ guild: guildId }).sort({ link: 'asc' }).exec();
 
     if (feeds.length == 0) {
       return interaction.reply({
