@@ -1,5 +1,6 @@
 import {
   ChatInputCommandInteraction,
+  Client,
   PermissionFlagsBits,
   SlashCommandBuilder,
   SlashCommandSubcommandsOnlyBuilder,
@@ -23,7 +24,7 @@ class Feeds implements BotCommand {
     }
   }
 
-  async execute(interaction: ChatInputCommandInteraction) {
+  async execute(interaction: ChatInputCommandInteraction, client: Client) {
     if (!interaction || !interaction.options) {
       return;
     }
@@ -38,7 +39,7 @@ class Feeds implements BotCommand {
 
     const subcommand = interaction.options.getSubcommand();
 
-    return subcommanFeeddModules[subcommand].execute(interaction, guild.id);
+    return subcommanFeeddModules[subcommand].execute(interaction, guild.id, client);
   }
 }
 

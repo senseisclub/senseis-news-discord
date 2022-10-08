@@ -8,4 +8,8 @@ export class Utils {
 
     return processedValue;
   }
+
+  static compareString(firstString: string, secondString: string) {
+    return (Utils.trimAndLowerCase(firstString) || '').includes(Utils.trimAndLowerCase(secondString) || '');
+  }
 }
