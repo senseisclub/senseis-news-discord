@@ -1,6 +1,5 @@
 import {
   ChatInputCommandInteraction,
-  Client,
   InteractionResponse,
   SlashCommandBuilder,
   SlashCommandSubcommandsOnlyBuilder,
@@ -8,5 +7,5 @@ import {
 
 export interface BotCommand {
   data: SlashCommandBuilder | SlashCommandSubcommandsOnlyBuilder;
-  execute(interaction: ChatInputCommandInteraction, client?: Client): Promise<InteractionResponse<boolean> | undefined>;
+  execute(interaction: ChatInputCommandInteraction): Promise<InteractionResponse<boolean> | undefined>;
 }

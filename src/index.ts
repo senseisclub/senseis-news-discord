@@ -2,13 +2,13 @@ import client from './bot';
 import config from './config';
 import connection from './databases/mongo/connection';
 import { syncNewCommands } from './scripts/deploy-commands';
-import { syncFeedLinks } from './scripts/feed-emmiter';
+import { scheduleMessageSending } from './scripts/feed-emmiter';
 import { onReady, onCommand, onSelectMenu, onClientRemoved, onClientCreated } from './handlers';
 
 syncNewCommands();
 connection();
 
-syncFeedLinks(client);
+scheduleMessageSending(client);
 
 onReady(client);
 onClientCreated(client);

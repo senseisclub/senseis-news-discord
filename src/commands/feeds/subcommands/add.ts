@@ -1,10 +1,9 @@
-import { ChatInputCommandInteraction, Client, SlashCommandSubcommandBuilder } from 'discord.js';
+import { ChatInputCommandInteraction, SlashCommandSubcommandBuilder } from 'discord.js';
 import { FeedModel } from '../../../databases/mongo/models/feeds';
 import { BotSubcommand } from '../../types/BotSubcommand';
 import feedValidator from '../feed-validation/feed-validator';
 import { Utils } from '../../../utils/utils';
 import { ObjectId } from 'mongoose';
-import { addFeed } from '../../../scripts/feed-emmiter';
 
 class AddFeed implements BotSubcommand {
   data = new SlashCommandSubcommandBuilder()
@@ -12,7 +11,7 @@ class AddFeed implements BotSubcommand {
     .setDescription('Add a new feed link')
     .addStringOption((option) => option.setName('link').setDescription('Link of feed').setRequired(true));
 
-  async execute(interaction: ChatInputCommandInteraction, guildId: ObjectId, client: Client) {
+  async execute(interaction: ChatInputCommandInteraction, guildId: ObjectId) {
     const link = Utils.trimAndLowerCase(interaction.options.getString('link'));
 
     try {
@@ -34,8 +33,6 @@ class AddFeed implements BotSubcommand {
       const feed = new FeedModel({ link, guild: guildId });
 
       await feed.save();
-
-      addFeed(client, link);
 
       return interaction.reply({
         content: `${link} has been added!`,

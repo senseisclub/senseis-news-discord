@@ -1,57 +1,52 @@
 import { bold, Client, italic, TextChannel } from 'discord.js';
-import RssFeedEmitter from 'rss-feed-emitter';
+import FeedParser from '../commands/feeds/feed-parser/feed-parser';
 import { FeedModel } from '../databases/mongo/models/feeds';
 import { TagModel } from '../databases/mongo/models/tags';
+import cron from 'node-cron';
 import { Utils } from '../utils/utils';
 
-const feeder = new RssFeedEmitter({ skipFirstLoad: true });
-const twelveHours = 43200000;
+export const scheduleMessageSending = async (client: Client) => {
+  cron.schedule('0 6-18/6 * * *', async () => {
+    console.log('Sending message to channels...');
 
-interface FeedItem {
-  title: string;
-  link: string;
-  description: string;
-  categories: string[];
-  pubDate: Date;
-}
+    const links = await FeedModel.distinct('link').exec();
+    for (const link of links) {
+      const feeds = await FeedModel.find({ link }).populate('guild').exec();
 
-export const syncFeedLinks = async (client: Client) => {
-  const feeds = await FeedModel.find().distinct('link').exec();
+      const parser = new FeedParser(link);
+      const items = await parser.getItems();
 
-  for (const feed of feeds) {
-    addFeed(client, feed);
-  }
-};
+      for (const feed of feeds) {
+        if (feed.guild.channelId) {
+          const tags = await TagModel.find({ guild: feed.guild }).exec();
 
-export function addFeed(client: Client, link: string) {
-  const hasFeedEvent = feeder.list.some((feed) => feed.eventName === link);
+          items.forEach(async (item) => {
+            if (item.pubDate && (!feed.lastUpdate || new Date(item.pubDate).getTime() > feed.lastUpdate)) {
+              const hasFeedTag =
+                !tags.length ||
+                !item.categories ||
+                !item.categories.length ||
+                tags.some((tag) => item.categories?.some((categorie) => Utils.compareString(categorie, tag.tag)));
 
-  if (!hasFeedEvent) {
-    feeder.add({ url: link, refresh: twelveHours, eventName: link });
-    addFeedListener(client, link);
-  }
-}
+              if (hasFeedTag) {
+                try {
+                  const channel = (await client.channels.fetch(feed.guild.channelId)) as TextChannel;
 
-export const addFeedListener = (client: Client, link: string) => {
-  feeder.on(link, async (item: FeedItem) => {
-    const feeds = await FeedModel.find({ link }).populate('guild');
-
-    for (const feed of feeds) {
-      if (feed.guild.channelId) {
-        const tags = await TagModel.find({ guild: feed.guild }).exec();
-
-        const hasFeedTag =
-          tags.length == 0 ||
-          item.categories.length == 0 ||
-          tags.some((tag) => item.categories.some((categorie) => Utils.compareString(categorie, tag.tag)));
-
-        if (hasFeedTag) {
-          const channel = (await client.channels.fetch(feed.guild.channelId)) as TextChannel;
-
-          await channel.send({
-            content: `${bold(item.title)}\n\n${item.link}\n\n ${italic('Tags: [' + item.categories + ']')}`,
+                  await channel.send({
+                    content: `\n${bold(item.title ? item.title : 'Untitled')}\n\n${item.link}\n\n ${italic(
+                      'Tags: [' + (item.categories ? item.categories : '') + ']'
+                    )}`,
+                  });
+                } catch (e) {
+                  console.log('Could not send message...');
+                  console.error(e);
+                }
+              }
+            }
           });
         }
+
+        await feed.update({ lastUpdate: new Date().getTime() }).exec();
       }
     }
   });

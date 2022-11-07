@@ -10,7 +10,7 @@ export const onCommand = (client: Client) => {
     const { commandName } = interaction;
 
     try {
-      await commandModules[commandName].execute(interaction, client);
+      await commandModules[commandName].execute(interaction);
     } catch (error) {
       await interaction.reply({
         content: 'Something went wrong while executing this command...',
