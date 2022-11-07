@@ -4,9 +4,10 @@ import { FeedModel } from '../databases/mongo/models/feeds';
 import { TagModel } from '../databases/mongo/models/tags';
 import cron from 'node-cron';
 import { Utils } from '../utils/utils';
+import config from '../config';
 
 export const scheduleMessageSending = async (client: Client) => {
-  cron.schedule('0 6-18/6 * * *', async () => {
+  cron.schedule(config.CRON_REFRESH_RATE, async () => {
     console.log('Sending message to channels...');
 
     const links = await FeedModel.distinct('link').exec();
@@ -21,7 +22,7 @@ export const scheduleMessageSending = async (client: Client) => {
           const tags = await TagModel.find({ guild: feed.guild }).exec();
 
           items.forEach(async (item) => {
-            if (item.pubDate && (!feed.lastUpdate || new Date(item.pubDate).getTime() > feed.lastUpdate)) {
+            if (item.pubDate && new Date(item.pubDate).getTime() > feed.lastUpdate) {
               const hasFeedTag =
                 !tags.length ||
                 !item.categories ||
