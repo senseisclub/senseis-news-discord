@@ -6,7 +6,7 @@ import cron from 'node-cron';
 import { Utils } from '../utils/utils';
 import config from '../config';
 
-export const scheduleMessageSending = async (client: Client) => {
+export const scheduleMessageSending = (client: Client) => {
   cron.schedule(config.CRON_REFRESH_RATE, async () => {
     console.log('Sending message to channels...');
 
