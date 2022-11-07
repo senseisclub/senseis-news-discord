@@ -9,9 +9,18 @@ class FeedParser {
   }
 
   async getItems() {
-    const feed = await this.parser.parseURL(this.url);
+    let items: Parser.Item[] = [];
 
-    return feed.items;
+    try {
+      const feed = await this.parser.parseURL(this.url);
+
+      items = feed.items;
+    } catch (e) {
+      console.log(`Could not get items from ${this.url}`);
+      console.error(e);
+    }
+
+    return items;
   }
 }
 

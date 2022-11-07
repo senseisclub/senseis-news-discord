@@ -34,7 +34,7 @@ export const scheduleMessageSending = (client: Client) => {
                   const channel = (await client.channels.fetch(feed.guild.channelId)) as TextChannel;
 
                   await channel.send({
-                    content: `\n${bold(item.title ? item.title : 'Untitled')}\n\n${item.link}\n\n ${italic(
+                    content: `${bold(item.title ? item.title : 'Untitled')}\n\n${item.link}\n\n ${italic(
                       'Tags: [' + (item.categories ? item.categories : '') + ']'
                     )}`,
                   });
